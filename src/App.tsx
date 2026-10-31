@@ -24,6 +24,7 @@ function App() {
   const [query, setQuery] = useState(''); const [filter, setFilter] = useState<'All' | Category>('All')
   const [statusFilter, setStatusFilter] = useState<'All' | 'active' | 'paused'>('All')
   const [modal, setModal] = useState<Subscription | 'new' | null>(null); const [mobileNav, setMobileNav] = useState(false)
+  const [activeSection, setActiveSection] = useState<'overview' | 'wallet' | 'insights' | 'settings'>('overview')
   useEffect(() => saveSubscriptions(subscriptions), [subscriptions])
   const active = subscriptions.filter(s => s.status === 'active')
   const monthly = active.reduce((sum, s) => sum + monthlyEquivalent(s), 0)
@@ -39,12 +40,19 @@ function App() {
   }
   const toggle = (id: string) => setSubscriptions(items => items.map(s => s.id === id ? { ...s, status: s.status === 'active' ? 'paused' : 'active' } : s))
   const updateUsage = (id: string, usage?: UsageLevel) => setSubscriptions(items => items.map(s => s.id === id ? { ...s, usage } : s))
+  const navigate = (section: 'overview' | 'wallet' | 'insights' | 'settings') => {
+    setActiveSection(section)
+    setMobileNav(false)
+    if (section === 'overview') window.scrollTo({ top: 0, behavior: 'smooth' })
+    else if (section !== 'settings') document.getElementById(`${section}-section`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    else document.getElementById('settings-section')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  }
 
   return <div className="app-shell">
-    <aside className={mobileNav ? 'sidebar open' : 'sidebar'}><div className="brand"><div className="brand-mark"><WalletCards size={19}/></div><span>sub<span className="lime">wallet</span></span></div><button className="close-nav" onClick={() => setMobileNav(false)}><X size={20}/></button><nav><button className="nav-item active"><LayoutDashboard size={18}/> Overview</button><button className="nav-item"><CreditCard size={18}/> My wallet <span className="nav-count">{subscriptions.length}</span></button><button className="nav-item"><Activity size={18}/> Insights</button></nav><div className="sidebar-bottom"><button className="nav-item"><Settings2 size={18}/> Settings</button><div className="profile"><div className="avatar">FA</div><div><strong>Fathima</strong><span>Personal account</span></div><ChevronDown size={15}/></div></div></aside>
+    <aside className={mobileNav ? 'sidebar open' : 'sidebar'}><div className="brand"><div className="brand-mark"><WalletCards size={19}/></div><span>sub<span className="lime">wallet</span></span></div><button className="close-nav" onClick={() => setMobileNav(false)}><X size={20}/></button><nav><button className={activeSection === 'overview' ? 'nav-item active' : 'nav-item'} onClick={() => navigate('overview')}><LayoutDashboard size={18}/> Overview</button><button className={activeSection === 'wallet' ? 'nav-item active' : 'nav-item'} onClick={() => navigate('wallet')}><CreditCard size={18}/> My wallet <span className="nav-count">{subscriptions.length}</span></button><button className={activeSection === 'insights' ? 'nav-item active' : 'nav-item'} onClick={() => navigate('insights')}><Activity size={18}/> Insights</button></nav><div className="sidebar-bottom"><button className={activeSection === 'settings' ? 'nav-item active' : 'nav-item'} onClick={() => navigate('settings')}><Settings2 size={18}/> Settings</button><div className="profile"><div className="avatar">FA</div><div><strong>Fathima</strong><span>Personal account</span></div><ChevronDown size={15}/></div></div></aside>
     {mobileNav && <div className="backdrop" onClick={() => setMobileNav(false)}/>}<main className="main-content"><header className="topbar"><button className="menu-btn" onClick={() => setMobileNav(true)}><Menu size={21}/></button><div><p className="eyebrow">Saturday, October 31, 2026</p><h1>Good afternoon, Fathima <span className="wave">✦</span></h1></div><div className="top-actions"><button className="icon-button"><Search size={18}/></button><div className="avatar">FA</div></div></header>
       <section className="hero-grid"><div className="hero-card"><div className="hero-top"><div><p className="eyebrow light">MONTHLY SPEND</p><div className="hero-value">{money.format(monthly)}<span>/mo</span></div></div><div className="trend"><ArrowUpRight size={15}/> 12.4%</div></div><div className="hero-footer"><span>Annual run rate</span><strong>{money.format(annual)}</strong><span className="muted-separator">·</span><span>{active.length} active subscriptions</span></div><div className="hero-glow"/></div><div className="quick-stat"><div className="stat-icon"><CalendarDays size={19}/></div><p className="eyebrow">NEXT RENEWAL</p><strong>{upcoming[0] ? dateFormat.format(new Date(upcoming[0].nextRenewal + 'T12:00:00')) : '—'}</strong><span>{upcoming[0]?.name || 'No upcoming payments'}</span></div><div className="quick-stat"><div className="stat-icon lime-bg"><Sparkles size={19}/></div><p className="eyebrow">BIGGEST CATEGORY</p><strong>{topCategory?.category || '—'}</strong><span>{topCategory ? money.format(topCategory.total) + ' / month' : 'Add a subscription'}</span></div></section>
-      <section className="content-section wallet-section">
+      <section id="wallet-section" className="content-section wallet-section">
         <div className="section-heading"><div><p className="eyebrow">YOUR COLLECTION</p><h2>Subscription wallet</h2></div><button className="primary-btn" onClick={() => setModal('new')}><Plus size={17}/> Add subscription</button></div>
         <div className="toolbar">
           <div className="search-box"><Search size={17}/><input aria-label="Search subscriptions" value={query} onChange={e => setQuery(e.target.value)} placeholder="Search subscriptions"/></div>
@@ -61,7 +69,11 @@ function App() {
         <div className="wallet-grid">{visible.map(s => <SubscriptionCard key={s.id} item={s} onEdit={() => setModal(s)} onToggle={() => toggle(s.id)} onDelete={() => remove(s.id)}/>)}{visible.length === 0 && <div className="empty-state"><CircleDollarSign size={28}/><strong>No subscriptions found</strong><span>Try another search or adjust your filters.</span></div>}</div>
       </section>
       <section className="lower-grid"><UpcomingPayments items={upcoming}/><div className="insight-card"><div className="section-heading"><div><p className="eyebrow">SPENDING INSIGHT</p><h2>Where your money goes</h2></div><button className="more-btn">•••</button></div><div className="insight-content"><div className="donut" style={{'--p': `${monthly ? Math.max((topCategory.total / monthly) * 100, 6) : 0}%`} as React.CSSProperties}><div><strong>{money.format(monthly)}</strong><span>per month</span></div></div><div className="legend">{categories.slice(0, 3).map((c, i) => <div className="legend-row" key={c}><span className="dot" style={{background: colors[i]}}/><span>{c}</span><strong>{money.format(categoryTotals.find(x => x.category === c)?.total || 0)}</strong></div>)}</div></div></div></section>
-      <IntelligenceSection subscriptions={subscriptions} onUsageChange={updateUsage}/>
+      <section id="insights-section"><IntelligenceSection subscriptions={subscriptions} onUsageChange={updateUsage}/></section>
+      <section id="settings-section" className="settings-section">
+        <div className="section-heading"><div><p className="eyebrow">PREFERENCES</p><h2>Settings</h2></div><Settings2 size={20} color="#b7f34d"/></div>
+        <div className="settings-card"><strong>Local wallet storage</strong><span>Your subscriptions are stored securely in this browser using LocalStorage. No account or external service is required.</span></div>
+      </section>
     </main>{modal && <SubscriptionModal item={modal === 'new' ? undefined : modal} onClose={() => setModal(null)} onSave={save}/>}</div>
 }
 
