@@ -4,9 +4,9 @@
 Single-page React + Vite + TypeScript app. `App` owns subscription state and derives all dashboard values. A small `storage` module serializes the state to `localStorage`; no totals are hardcoded.
 
 ## Data model
-`Subscription { id, name, category, price, billing: 'monthly'|'yearly', nextRenewal, color, status: 'active'|'paused' }`
+`Subscription { id, name, category, price, billing: 'weekly'|'monthly'|'quarterly'|'yearly', nextRenewal, color, status: 'active'|'paused' }`
 
-Monthly equivalent is `price` for monthly billing and `price / 12` for yearly billing. Annualized is monthly equivalent × 12.
+Monthly equivalent is `price × 52 / 12` weekly, `price` monthly, `price / 3` quarterly, and `price / 12` yearly. Annualized is monthly equivalent × 12. Paused records are excluded from both.
 
 ## Component responsibilities
 - `App`: layout, state, derived metrics, search/filter, modal orchestration.

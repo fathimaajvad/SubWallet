@@ -10,7 +10,7 @@ Build a premium, mobile-first wallet for seeing and controlling recurring subscr
 ## Requirements
 1. Dashboard: total monthly spend, annualized spend, active subscription count, and a lightweight category insight.
 2. Wallet: card-based subscription list with brand, category, billing cadence, price, and next renewal.
-3. Add/edit: create and update a subscription with name, price, billing cycle, category, renewal date, and color.
+3. Add/edit: create and update a subscription with name, INR price, weekly/monthly/quarterly/yearly billing cycle, category, renewal date, and color.
 4. Controls: pause/resume and delete a subscription from its card.
 5. Upcoming payments: show the next renewals in chronological order.
 6. Search and category filters for the wallet.
