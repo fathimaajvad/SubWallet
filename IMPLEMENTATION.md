@@ -14,6 +14,13 @@ Monthly equivalent is `price × 52 / 12` weekly, `price` monthly, `price / 3` qu
 - `SubscriptionCard`: wallet-style card and pause/resume/delete actions.
 - `SubscriptionModal`: add/edit form and validation.
 - `UpcomingPayments`: next renewal list.
+- `features/intelligence/intelligenceEngine.ts`: shared INR formatting, billing normalization, category analysis, and smart insights.
+- `features/intelligence/spendingForecast.ts`: recurring payment projection for 7/30/90/365-day windows.
+- `features/intelligence/renewalRisk.ts`: explainable rule-based renewal risk signals.
+- `features/intelligence/savingsSimulator.ts`: non-mutating what-if savings calculations.
+- `features/intelligence/components/`: dashboard intelligence UI, manual usage check-ins, forecast, risk radar, and simulator.
+
+Usage is intentionally user-marked (`frequent`, `occasional`, or `rare`) and persisted with the subscription record. No automatic usage detection or LLM assistant is enabled because the MVP has no secure backend/API layer.
 
 ## Delivery steps
 1. Scaffold Vite and Tailwind.

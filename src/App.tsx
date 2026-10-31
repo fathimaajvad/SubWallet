@@ -1,22 +1,15 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Activity, ArrowUpRight, CalendarDays, Check, ChevronDown, CircleDollarSign, CreditCard, LayoutDashboard, Menu, Pause, Play, Plus, Search, Settings2, Sparkles, Trash2, WalletCards, X } from 'lucide-react'
-import type { Category, Subscription } from './types'
+import type { Category, Subscription, UsageLevel } from './types'
 import { loadSubscriptions, saveSubscriptions } from './storage'
+import { IntelligenceSection } from './features/intelligence/components/IntelligenceSection'
+import { monthlyEquivalent } from './features/intelligence/intelligenceEngine'
 
 const categories: Category[] = ['Entertainment', 'Productivity', 'Fitness', 'Utilities', 'Other']
 const colors = ['#a3e635', '#e879f9', '#60a5fa', '#fb923c', '#a78bfa', '#34d399']
 const money = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 2 })
 const dateFormat = new Intl.DateTimeFormat('en-IN', { day: 'numeric', month: 'short' })
 const initials = (name: string) => name.split(' ').map(x => x[0]).join('').slice(0, 2).toUpperCase()
-const monthlyEquivalent = (s: Subscription) => {
-  switch (s.billing) {
-    case 'weekly': return s.price * 52 / 12
-    case 'quarterly': return s.price / 3
-    case 'yearly': return s.price / 12
-    default: return s.price
-  }
-}
-
 function App() {
   const [subscriptions, setSubscriptions] = useState(loadSubscriptions)
   const [query, setQuery] = useState(''); const [filter, setFilter] = useState<'All' | Category>('All')
@@ -35,6 +28,7 @@ function App() {
     if (item && window.confirm(`Delete ${item.name} from your wallet?`)) setSubscriptions(items => items.filter(s => s.id !== id))
   }
   const toggle = (id: string) => setSubscriptions(items => items.map(s => s.id === id ? { ...s, status: s.status === 'active' ? 'paused' : 'active' } : s))
+  const updateUsage = (id: string, usage?: UsageLevel) => setSubscriptions(items => items.map(s => s.id === id ? { ...s, usage } : s))
 
   return <div className="app-shell">
     <aside className={mobileNav ? 'sidebar open' : 'sidebar'}><div className="brand"><div className="brand-mark"><WalletCards size={19}/></div><span>sub<span className="lime">wallet</span></span></div><button className="close-nav" onClick={() => setMobileNav(false)}><X size={20}/></button><nav><button className="nav-item active"><LayoutDashboard size={18}/> Overview</button><button className="nav-item"><CreditCard size={18}/> My wallet <span className="nav-count">{subscriptions.length}</span></button><button className="nav-item"><Activity size={18}/> Insights</button></nav><div className="sidebar-bottom"><button className="nav-item"><Settings2 size={18}/> Settings</button><div className="profile"><div className="avatar">FA</div><div><strong>Fathima</strong><span>Personal account</span></div><ChevronDown size={15}/></div></div></aside>
@@ -42,6 +36,7 @@ function App() {
       <section className="hero-grid"><div className="hero-card"><div className="hero-top"><div><p className="eyebrow light">MONTHLY SPEND</p><div className="hero-value">{money.format(monthly)}<span>/mo</span></div></div><div className="trend"><ArrowUpRight size={15}/> 12.4%</div></div><div className="hero-footer"><span>Annual run rate</span><strong>{money.format(annual)}</strong><span className="muted-separator">·</span><span>{active.length} active subscriptions</span></div><div className="hero-glow"/></div><div className="quick-stat"><div className="stat-icon"><CalendarDays size={19}/></div><p className="eyebrow">NEXT RENEWAL</p><strong>{upcoming[0] ? dateFormat.format(new Date(upcoming[0].nextRenewal + 'T12:00:00')) : '—'}</strong><span>{upcoming[0]?.name || 'No upcoming payments'}</span></div><div className="quick-stat"><div className="stat-icon lime-bg"><Sparkles size={19}/></div><p className="eyebrow">BIGGEST CATEGORY</p><strong>{topCategory?.category || '—'}</strong><span>{topCategory ? money.format(topCategory.total) + ' / month' : 'Add a subscription'}</span></div></section>
       <section className="content-section wallet-section"><div className="section-heading"><div><p className="eyebrow">YOUR COLLECTION</p><h2>Subscription wallet</h2></div><button className="primary-btn" onClick={() => setModal('new')}><Plus size={17}/> Add subscription</button></div><div className="toolbar"><div className="search-box"><Search size={17}/><input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search subscriptions"/></div><div className="filters"><button className={filter === 'All' ? 'filter active' : 'filter'} onClick={() => setFilter('All')}>All <span>{subscriptions.length}</span></button>{categories.map(c => <button key={c} className={filter === c ? 'filter active' : 'filter'} onClick={() => setFilter(c)}>{c}</button>)}</div></div><div className="wallet-grid">{visible.map(s => <SubscriptionCard key={s.id} item={s} onEdit={() => setModal(s)} onToggle={() => toggle(s.id)} onDelete={() => remove(s.id)}/>)}{visible.length === 0 && <div className="empty-state"><CircleDollarSign size={28}/><strong>No subscriptions found</strong><span>Try another search or add a new subscription.</span></div>}</div></section>
       <section className="lower-grid"><UpcomingPayments items={upcoming}/><div className="insight-card"><div className="section-heading"><div><p className="eyebrow">SPENDING INSIGHT</p><h2>Where your money goes</h2></div><button className="more-btn">•••</button></div><div className="insight-content"><div className="donut" style={{'--p': `${monthly ? Math.max((topCategory.total / monthly) * 100, 6) : 0}%`} as React.CSSProperties}><div><strong>{money.format(monthly)}</strong><span>per month</span></div></div><div className="legend">{categories.slice(0, 3).map((c, i) => <div className="legend-row" key={c}><span className="dot" style={{background: colors[i]}}/><span>{c}</span><strong>{money.format(categoryTotals.find(x => x.category === c)?.total || 0)}</strong></div>)}</div></div></div></section>
+      <IntelligenceSection subscriptions={subscriptions} onUsageChange={updateUsage}/>
     </main>{modal && <SubscriptionModal item={modal === 'new' ? undefined : modal} onClose={() => setModal(null)} onSave={save}/>}</div>
 }
 
