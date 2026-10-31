@@ -1,6 +1,106 @@
 @tailwind base;
+/* Premium subscription wallet cards */
+.wallet-grid { grid-template-columns:repeat(4, minmax(0, 1fr)); }
+.subscription-card { min-height:244px; padding:20px; position:relative; isolation:isolate; overflow:hidden; border:1px solid #2a3541; border-radius:18px; background:linear-gradient(145deg, #1b2531 0%, #141c26 56%, #111720 100%); box-shadow:0 12px 28px rgba(0,0,0,.16), inset 0 1px 0 rgba(255,255,255,.035); transition:transform .2s ease, border-color .2s ease, box-shadow .2s ease; }
+.subscription-card::before { content:""; position:absolute; z-index:-1; inset:0; opacity:.12; background:linear-gradient(125deg, var(--card-accent) 0%, transparent 48%); pointer-events:none; }
+.subscription-card:hover { transform:translateY(-3px); border-color:#526170; box-shadow:0 18px 34px rgba(0,0,0,.24), 0 0 24px color-mix(in srgb, var(--card-accent) 9%, transparent); }
+.subscription-card.paused { border-color:#343b43; }
+.subscription-card.paused::before { opacity:.045; }
+.card-glow { position:absolute; z-index:-1; top:-76px; right:-58px; width:180px; height:180px; border-radius:50%; background:var(--card-accent); opacity:.13; filter:blur(62px); pointer-events:none; }
+.card-accent { position:absolute; top:0; left:22px; right:22px; height:2px; background:linear-gradient(90deg, transparent, var(--card-accent), transparent); opacity:.9; }
+.card-header { display:flex; justify-content:space-between; align-items:center; min-height:42px; }
+.service-logo { width:42px; height:42px; border:1px solid rgba(255,255,255,.22); border-radius:13px; font-size:13px; box-shadow:0 5px 15px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.25); }
+.status-badge { display:inline-flex; align-items:center; gap:6px; border:1px solid #344238; border-radius:99px; padding:5px 9px; color:#b7d792; background:rgba(183,243,77,.07); font-size:9px; font-weight:650; letter-spacing:.02em; }
+.status-badge.paused { color:#c5a977; border-color:#4c4230; background:rgba(211,164,88,.08); }
+.status-dot { width:6px; height:6px; border-radius:50%; background:#b7f34d; box-shadow:0 0 8px rgba(183,243,77,.55); }
+.status-badge.paused .status-dot { background:#d4aa67; box-shadow:0 0 7px rgba(212,170,103,.4); }
+.card-main { min-width:0; }
+.card-main h3 { overflow:hidden; margin:18px 0 9px; color:#f5f7fa; font-size:17px; font-weight:650; letter-spacing:-.035em; text-overflow:ellipsis; white-space:nowrap; }
+.category-pill { display:inline-flex; color:#aab5c2; font-size:10px; background:rgba(255,255,255,.055); border:1px solid rgba(255,255,255,.045); border-radius:6px; padding:4px 8px; }
+.card-price { display:flex; align-items:baseline; gap:6px; margin-top:20px; }
+.card-price strong { color:#f4f7fa; font-size:25px; font-weight:680; letter-spacing:-.055em; }
+.card-price span { color:#8491a0; font-size:10px; }
+.card-footer { position:absolute; bottom:0; left:20px; right:20px; display:flex; align-items:center; justify-content:space-between; gap:8px; min-height:62px; border-top:1px solid rgba(255,255,255,.075); color:#778392; }
+.next-payment { display:grid; gap:4px; min-width:0; }
+.payment-label { color:#738091; font-size:8px; font-weight:700; letter-spacing:.12em; }
+.card-footer .next-payment strong { color:#d8dee5; font-size:11px; font-weight:600; }
+.card-actions { display:flex; gap:3px; flex-shrink:0; }
+.card-actions button { display:grid; place-items:center; width:32px; height:32px; padding:0; background:rgba(255,255,255,.035); color:#9ba7b4; border:1px solid rgba(255,255,255,.055); border-radius:9px; transition:background .15s ease, color .15s ease, border-color .15s ease; }
+.card-actions button:hover { background:rgba(183,243,77,.1); border-color:rgba(183,243,77,.22); color:#d9f7aa; }
+.card-actions button:focus-visible { outline:2px solid #b7f34d; outline-offset:2px; }
+@media (max-width:1060px) { .wallet-grid { grid-template-columns:repeat(2, minmax(0, 1fr)); } }
+@media (max-width:760px) { .wallet-grid { grid-template-columns:1fr; } .subscription-card { min-height:238px; } }
 @tailwind components;
 @tailwind utilities;
+/* Higher-specificity card rules keep this design ahead of the legacy base rules below. */
+.wallet-grid .subscription-card { min-height:244px; padding:20px; isolation:isolate; border:1px solid #2a3541; border-radius:18px; background:linear-gradient(145deg, #1b2531 0%, #141c26 56%, #111720 100%); box-shadow:0 12px 28px rgba(0,0,0,.16), inset 0 1px 0 rgba(255,255,255,.035); transition:transform .2s ease, border-color .2s ease, box-shadow .2s ease; }
+.wallet-grid .subscription-card::before { content:""; position:absolute; z-index:-1; inset:0; opacity:.12; background:linear-gradient(125deg, var(--card-accent) 0%, transparent 48%); pointer-events:none; }
+.wallet-grid .subscription-card:hover { transform:translateY(-3px); border-color:#526170; box-shadow:0 18px 34px rgba(0,0,0,.24), 0 0 24px rgba(183,243,77,.07); }
+.wallet-grid .subscription-card.paused { border-color:#343b43; }
+.wallet-grid .subscription-card.paused::before { opacity:.045; }
+.wallet-grid .card-glow { position:absolute; z-index:-1; top:-76px; right:-58px; width:180px; height:180px; border-radius:50%; background:var(--card-accent); opacity:.13; filter:blur(62px); pointer-events:none; }
+.wallet-grid .card-accent { top:0; left:22px; right:22px; height:2px; background:linear-gradient(90deg, transparent, var(--card-accent), transparent); opacity:.9; }
+.wallet-grid .card-header { align-items:center; min-height:42px; }
+.wallet-grid .service-logo { width:42px; height:42px; border:1px solid rgba(255,255,255,.22); border-radius:13px; font-size:13px; box-shadow:0 5px 15px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.25); }
+.wallet-grid .card-main { min-width:0; }
+.wallet-grid .card-main h3 { overflow:hidden; margin:18px 0 9px; color:#f5f7fa; font-size:17px; font-weight:650; letter-spacing:-.035em; text-overflow:ellipsis; white-space:nowrap; }
+.wallet-grid .category-pill { display:inline-flex; color:#aab5c2; font-size:10px; background:rgba(255,255,255,.055); border:1px solid rgba(255,255,255,.045); border-radius:6px; padding:4px 8px; }
+.wallet-grid .card-price { gap:6px; margin-top:20px; }
+.wallet-grid .card-price strong { color:#f4f7fa; font-size:25px; font-weight:680; letter-spacing:-.055em; }
+.wallet-grid .card-price span { color:#8491a0; font-size:10px; }
+.wallet-grid .card-footer { bottom:0; left:20px; right:20px; gap:8px; min-height:62px; border-top:1px solid rgba(255,255,255,.075); }
+.wallet-grid .next-payment { display:grid; gap:4px; min-width:0; }
+.wallet-grid .payment-label { color:#738091; font-size:8px; font-weight:700; letter-spacing:.12em; }
+.wallet-grid .card-footer .next-payment strong { color:#d8dee5; font-size:11px; font-weight:600; }
+.wallet-grid .card-actions { gap:3px; flex-shrink:0; }
+.wallet-grid .card-actions button { display:grid; place-items:center; width:32px; height:32px; padding:0; background:rgba(255,255,255,.035); color:#9ba7b4; border:1px solid rgba(255,255,255,.055); border-radius:9px; transition:background .15s ease, color .15s ease, border-color .15s ease; }
+.wallet-grid .card-actions button:hover { background:rgba(183,243,77,.1); border-color:rgba(183,243,77,.22); color:#d9f7aa; }
+.wallet-grid .card-actions button:focus-visible { outline:2px solid #b7f34d; outline-offset:2px; }
+.wallet-section .toolbar { min-width:0; flex-wrap:wrap; align-items:center; overflow:visible; }
+.wallet-section .search-box { flex:0 1 260px; min-width:min(225px, 100%); }
+.filter-groups { display:flex; flex:1 1 420px; min-width:0; flex-wrap:wrap; align-items:center; gap:8px 12px; }
+.filter-groups .filters { min-width:0; max-width:100%; flex-wrap:wrap; }
+.filter-groups .filter { min-height:34px; white-space:nowrap; }
+.filter-groups .status-filters { padding-left:10px; border-left:1px solid #303945; }
+.upcoming-card { min-width:0; }
+.upcoming-card .section-heading { min-width:0; }
+.upcoming-card .link-btn { flex:0 0 auto; min-height:36px; padding:6px 4px; }
+.upcoming-card .payment-row { display:grid; grid-template-columns:36px minmax(0, 1fr) auto; gap:11px; min-width:0; }
+.upcoming-card .payment-name { min-width:0; }
+.upcoming-card .payment-name strong { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.upcoming-card .payment-date { min-width:66px; white-space:nowrap; }
+.upcoming-card .payment-row.due-soon { border-top-color:rgba(183,243,77,.2); }
+.upcoming-card .payment-row.due-soon .payment-name span { color:#c5e98b; }
+.upcoming-card .payment-row.due-soon .payment-date strong { color:#d9f7aa; }
+.payments-empty { min-height:190px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; padding:22px 12px; text-align:center; }
+.payments-empty-icon { width:42px; height:42px; display:grid; place-items:center; margin-bottom:3px; color:#b7f34d; background:rgba(183,243,77,.09); border:1px solid rgba(183,243,77,.14); border-radius:14px; }
+.payments-empty strong { color:#e8edf2; font-size:13px; }
+.payments-empty span { max-width:260px; color:#84909f; font-size:11px; line-height:1.5; }
+@media (max-width:1060px) {
+  .wallet-section .search-box { flex-basis:230px; }
+  .filter-groups { flex-basis:100%; }
+}
+@media (max-width:760px) {
+  .wallet-section .toolbar { gap:12px; }
+  .wallet-section .search-box { flex-basis:100%; width:100%; }
+  .filter-groups { flex:1 1 100%; align-items:flex-start; gap:8px; }
+  .filter-groups .filters { flex-wrap:nowrap; overflow-x:auto; padding-bottom:3px; scrollbar-width:thin; }
+  .filter-groups .status-filters { padding-left:0; border-left:0; }
+  .upcoming-card { padding:17px; }
+  .upcoming-card .section-heading { align-items:flex-start; }
+  .upcoming-card .payment-row { grid-template-columns:34px minmax(0, 1fr) auto; gap:8px; }
+  .upcoming-card .payment-date { min-width:62px; }
+}
+@media (max-width:390px) {
+  .filter-groups .filters { gap:2px; }
+  .filter-groups .filter { padding:7px 8px; font-size:10px; }
+  .upcoming-card { padding:14px; }
+  .upcoming-card .section-heading { flex-wrap:wrap; }
+  .upcoming-card .payment-row { grid-template-columns:30px minmax(0, 1fr) auto; gap:7px; }
+  .upcoming-card .mini-logo { width:30px; height:30px; }
+  .upcoming-card .payment-name strong, .upcoming-card .payment-date strong { font-size:11px; }
+  .upcoming-card .payment-date { min-width:58px; }
+}
 
 :root { font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #f3f6f8; background: #0c1017; font-synthesis: none; }
 * { box-sizing: border-box; } body { margin: 0; min-width: 320px; background: #0c1017; } button, input, select { font: inherit; } button { cursor: pointer; border: 0; color: inherit; }
